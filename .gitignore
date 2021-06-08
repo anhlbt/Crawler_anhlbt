@@ -1,0 +1,9 @@
+.idea/
+__pycache__/
+BaoMoiCrawler/alignment/sync_ebook_en/
+CrawlerBatdongsan/venv/
+*.log
+*.mp3
+*.json
+# Unit test / coverage reports
+tmp/

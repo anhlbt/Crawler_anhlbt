@@ -9,7 +9,7 @@ import re
 import zipfile
 
 
-# This function does booth comands, its search for zip files and extract it to a specific folder
+# This function does both comands, its search for zip files and extract it to a specific folder
 # The user could use it to unpack his dataset into a specific folder
 
 

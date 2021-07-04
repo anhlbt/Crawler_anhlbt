@@ -1,6 +1,12 @@
+from os.path import dirname, join, realpath, isfile
 import sys
-sys.path.insert(0, ".")
+
+CURRENT_DIR = dirname(realpath(__file__))
+PARENT_DIR = dirname(CURRENT_DIR)
+
+sys.path.insert(0, PARENT_DIR)
 import requests
+import shutil
 from bs4 import BeautifulSoup
 import datetime
 from selenium import webdriver
@@ -21,8 +27,9 @@ def get_html_(url):
     page = ""
     while page == '':
         try:
+            # headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:68.0) Gecko/20100101 Firefox/68.0'}  
             headers = {
-                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36'}
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36'}
             page = requests.get(url, headers=headers)
             return page.text
             break
@@ -37,8 +44,8 @@ def get_html_(url):
             continue
 
 
-def get_info(html):
-    image_folder = r'/home/anhlbt/Downloads/A2 Elementary'
+def get_info(html,image_folder):
+     
     dictionary = []
     # dic={}
 
@@ -52,17 +59,31 @@ def get_info(html):
     for i in soup1:
         dictionary.append("https://english-e-reader.net" + i.find("a").get("href"))
         img_link = "https://english-e-reader.net" + i.find("img").get("src")
-        with open(join(image_folder,basename(img_link)), "wb") as f:
-            f.write(requests.get(img_link).content)
+        # with open(join(image_folder,basename(img_link)), "wb") as f:
+        #     f.write(requests.get(img_link).content)
     return dictionary
 
-def get_img_cover(html):
-    image_folder = r'/home/anhlbt/Downloads/A2 Elementary'
+def get_img_cover(html, image_folder):
+    
     dictionary = []
     soup1 = BeautifulSoup(html, "lxml")
     soup1 = soup1.findAll("div", class_="book-container")
     for i in soup1:
         img_link = "https://english-e-reader.net" + i.find("img").get("src")
+
+        # r = requests.get(img_link, stream = True)
+        # if r.status_code == 200:
+        #     # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
+        #     r.raw.decode_content = True
+            
+        #     # Open a local file with wb ( write binary ) permission.
+        #     with open(join(image_folder,basename(img_link)), "wb") as f:
+        #         shutil.copyfileobj(r.raw, f)
+                
+        #     print('Image sucessfully Downloaded: ',img_link)
+        # else:
+        #     print('Image Couldn\'t be retreived')
+
         dictionary.append(img_link)
         with open(join(image_folder,basename(img_link)), "wb") as f:
             f.write(requests.get(img_link).content)
@@ -118,6 +139,7 @@ def get_files(url):
     # chrome_options.add_argument('--headless')
     chrome_options.add_argument('window-size=1920x1200')
     downloadFilepath = '~/Downloads/english_reader'
+    # downloadFilepath='/media/anhlbt/DATA/A2_Elementary'
     prefs = {'profile.default_content_setting_values.automatic_downloads': 1,\
         "profile.default_content_settings.popups":0, \
             "download.default_directory": downloadFilepath,\
@@ -126,7 +148,7 @@ def get_files(url):
     chrome_options.add_experimental_option("excludeSwitches", ['enable-automation']);
     # browser = geckodriver 
     # browser= webdriver.Firefox(options=chrome_options)
-    browser = webdriver.Chrome('./ebook_crawler/assets/chromedriver', options=chrome_options)    
+    browser = webdriver.Chrome(join(CURRENT_DIR,'assets/chromedriver'), options=chrome_options)    
     # makes sure slower connections work as well        
     print ("Waiting 10 sec")
     browser.implicitly_wait(1)   
@@ -139,6 +161,16 @@ def get_files(url):
         
     try:
         browser.implicitly_wait(2)
+
+        # #open file in write and binary mode
+        # with open('Logo.png', 'wb') as file:
+        #     #identify image to be captured
+        #     l = browser.find_element_by_xpath("/html/body/div[3]/div/div[1]/div[1]/img")
+        #     #write file
+        #     image_url = l.get_attribute("src")
+        #     reponse = requests.get(image_url)
+        #     file.write(reponse.content)        
+        
         
         window_size = browser.get_window_size()
         browser.maximize_window()
@@ -201,15 +233,17 @@ def get_files(url):
         # browser.quit()
 
 if __name__ == "__main__":
+    #https://english-e-reader.net/level/elementary
+    image_folder = '/media/anhlbt/DATA/A2_Elementary'
+    html = get_html_("https://english-e-reader.net/level/elementary") 
 
-    html = get_html_("https://english-e-reader.net/level/elementary")
-    get_img_cover(html)
-    # links = (get_info(html))
-    # for index,i in enumerate(links):
-    #     print(i, "\n{} from {}".format(str(index+1),str(len(links))))
-    #     get_files(i)
+    links = (get_info(html, image_folder))
+    for index,i in enumerate(links):
+        print(i, "\n{} from {}".format(str(index+1),str(len(links))))
+        get_files(i)
         
 
+    # get_img_cover(html, image_folder) 
 
     # pdb.set_trace()
     # get_files('https://english-e-reader.net/book/muhammad-ali-b-smith')

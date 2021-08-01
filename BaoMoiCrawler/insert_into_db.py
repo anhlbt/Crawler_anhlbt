@@ -22,12 +22,14 @@ def check_file_names(input_folder):
         
         
 if __name__=="__main__":
-    input_folder= r'/home/anhlbt/Downloads/A2 Elementary'
+    # input_folder= r'/home/anhlbt/Downloads/A2 Elementary'
+    input_folder = '/media/anhlbt/DATA/nlp_2020/flask_fullstack/MyBlog/front-end/src/assets/Elementary'
     lst_file = check_file_names(input_folder)
     print("end...")
     for file in lst_file:
         json_book = load_json_from_file(join(input_folder, "{0}.json".format(file)))
-        dbms = MyDatabase('SQLITE', dbname='app.db')
+        # dbms = MyDatabase('SQLITE', dbname='app.db')
+        dbms = MyDatabase('POSTGRESQL', dbname='baomoi.psql')
         post = Post(title=file, summary=file.replace("_", " "), body = "", json_book = json_book,
                     image="{0}.jpg".format(file), topic = "ebook")
         dbms.add_post(post)

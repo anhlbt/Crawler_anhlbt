@@ -20,7 +20,7 @@ class Preprocessing():
         
             
     def filter_file_by_ext(self, ext1='.txt'):
-        lst = [d.split(".")[0] for d in os.listdir(input_folder) if d.endswith(ext1)]
+        lst = [d.split(ext1)[0] for d in os.listdir(input_folder) if d.endswith(ext1)]
         return lst
         
     def check_file_names(self,):
@@ -49,7 +49,8 @@ class Preprocessing():
         zip_file_lst = self.filter_file_by_ext('.zip')
         for zip_file in zip_file_lst:
 
-            book_name = zip_file.split('-')[0]
+            # book_name = zip_file.split('-')[0]
+            book_name = zip_file.split('by')[0] # 
             book_name = book_name.replace("_", " ")
             regex = re.compile(".*{0}*".format(book_name))
             zipPath = join(self.input_folder, "{0}.zip".format(zip_file))
@@ -76,7 +77,7 @@ class Preprocessing():
                 shutil.rmtree(join(self.input_folder,zip_file))
 
 if __name__=="__main__":
-    input_folder = '/home/anhlbt/Downloads/test'
+    input_folder = '/media/anhlbt/DATA/english_ebook/starter'
     pre = Preprocessing(input_folder)
     pre.extract_and_merge()
     

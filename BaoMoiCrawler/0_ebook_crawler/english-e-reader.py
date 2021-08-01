@@ -1,4 +1,4 @@
-from os.path import dirname, join, realpath, isfile
+from os.path import dirname, join, realpath, isfile, exists, basename
 import sys
 
 CURRENT_DIR = dirname(realpath(__file__))
@@ -18,7 +18,7 @@ from utils.instalogger import InstaLogger
 import pdb
 from selenium.webdriver.support.ui import Select
 import requests
-from os.path  import basename, join
+import os
 
 
 def get_html_(url):
@@ -59,8 +59,8 @@ def get_info(html,image_folder):
     for i in soup1:
         dictionary.append("https://english-e-reader.net" + i.find("a").get("href"))
         img_link = "https://english-e-reader.net" + i.find("img").get("src")
-        # with open(join(image_folder,basename(img_link)), "wb") as f:
-        #     f.write(requests.get(img_link).content)
+        with open(join(image_folder,basename(img_link)), "wb") as f:
+            f.write(requests.get(img_link).content)
     return dictionary
 
 def get_img_cover(html, image_folder):
@@ -89,7 +89,7 @@ def get_img_cover(html, image_folder):
             f.write(requests.get(img_link).content)
     return dictionary    
 
-def get_files(url):
+def get_files(url, image_folder):
     croll_by_Y = 400
     js_string = '''var tmp = document.elementFromPoint({0}, {1});  \
                     mutex = true; \
@@ -138,11 +138,11 @@ def get_files(url):
     chrome_options.add_argument('--lang=en-US')
     # chrome_options.add_argument('--headless')
     chrome_options.add_argument('window-size=1920x1200')
-    downloadFilepath = '~/Downloads/english_reader'
+    # downloadFilepath = '/home/anhlbt/Downloads/pre-intermediate'
     # downloadFilepath='/media/anhlbt/DATA/A2_Elementary'
     prefs = {'profile.default_content_setting_values.automatic_downloads': 1,\
         "profile.default_content_settings.popups":0, \
-            "download.default_directory": downloadFilepath,\
+            "download.default_directory": image_folder,\
          'intl.accept_languages': 'en-US'}
     chrome_options.add_experimental_option('prefs',prefs) 
     chrome_options.add_experimental_option("excludeSwitches", ['enable-automation']);
@@ -234,13 +234,15 @@ def get_files(url):
 
 if __name__ == "__main__":
     #https://english-e-reader.net/level/elementary
-    image_folder = '/media/anhlbt/DATA/A2_Elementary'
-    html = get_html_("https://english-e-reader.net/level/elementary") 
+    image_folder = '/home/anhlbt/Downloads/unabridged'
+    if not exists(image_folder):
+        os.mkdir(image_folder)
+    html = get_html_("https://english-e-reader.net/level/unabridged") 
 
     links = (get_info(html, image_folder))
     for index,i in enumerate(links):
         print(i, "\n{} from {}".format(str(index+1),str(len(links))))
-        get_files(i)
+        get_files(i,image_folder)
         
 
     # get_img_cover(html, image_folder) 

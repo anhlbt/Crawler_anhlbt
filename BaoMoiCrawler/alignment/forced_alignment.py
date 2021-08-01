@@ -49,9 +49,12 @@ class AlignmentAudio(object):
         '''
         with open(self.script_file,"r") as script:
             new_text = script.read()
-        # new_text = new_text.replace("\t","")    
-        # new_text= new_text.split("- THE END -")[0]
-        # new_text = re.sub(pattern=r'\n{2,10}',repl="\n(sil)\n",string=new_text)
+            
+        # preprocessing text
+        new_text = new_text.replace("\t","")    
+        new_text= new_text.split("- THE END -")[0]
+        new_text = re.sub(pattern=r'\n{2,10}',repl="\n(sil)\n",string=new_text)
+
         new_text = re.sub(self.characters, '', new_text)
         
         # new_text = new_text.lower()

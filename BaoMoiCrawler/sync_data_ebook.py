@@ -2,16 +2,16 @@
 from alignment.forced_alignment import AlignmentAudio
 from alignment.config import ConfigEbook
 import os, random
-from os.path import isdir, join, exists
+from os.path import isdir, join, exists, dirname
 import shutil
 import pandas as pd
 from utils.instalogger import InstaLogger
 
-        
+DIR = dirname(__file__)      
 
 if __name__=="__main__":
     
-    config = ConfigEbook()
+    config = ConfigEbook(join(DIR, 'config.ini'))
     text_folder = config.sync_ebook_en['text_folder']
     audio_folder = config.sync_ebook_en['audio_folder']
     aligned_folder = config.sync_ebook_en['aligned_foler']
@@ -34,10 +34,14 @@ if __name__=="__main__":
     lst_text_files = set([d[:-4] for d in os.listdir(text_folder) if d.endswith(".txt")])
     # lst_audio_files = [d for d in os.listdir(audio_folder) if not isdir(join(audio_folder, d))]
 
-    print(len(lst_text_files))
+    # set_audio_files = [_file.replace("_"," ").replace("-", " by ") for _file in set_audio_files]
+        
+
+    print("total file: ",len(lst_text_files))
     count = 1
     for _file in set_audio_files:
-        if _file in lst_text_files:
+        # _file = _file.replace("_"," ").replace("-", " by ")
+        if _file.replace("_"," ").replace("-", " by ") in lst_text_files: #check name audio & text file
             try:
                 InstaLogger.logger().info('file: %s' %(_file))
                 audio_file = join(audio_folder, "{0}.mp3".format(_file)) #lst_rd = random.sample(['1','2', '8','9'], 4)  #  
@@ -48,7 +52,8 @@ if __name__=="__main__":
                 align_obj = AlignmentAudio(audio_file, script_file, aligned_file, characters, output_folder,language)
                 align_obj.preprocessing_script()
                 align_obj.align_audio()
-                
+
+                # #split audio #no need when sync ebook
                 # df_tmp = align_obj.read_fragments_to_df("{:06d}".format(count))
                 
                 # if df_tmp.shape[0] > int(ignore_num_sentences):
@@ -57,6 +62,8 @@ if __name__=="__main__":
                 #     count += 1
             except Exception as ex:
                 InstaLogger.logger().error(ex)
-         
+        else:
+            InstaLogger.logger().info('cannot precess: %s' %(_file))
+
     # df.to_csv(join(output_folder,"metadata.csv"), sep="|", index=False, header=False)
     

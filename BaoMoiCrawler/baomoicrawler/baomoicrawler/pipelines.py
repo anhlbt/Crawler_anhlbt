@@ -146,6 +146,7 @@ class ElasticPipeline():
     
     def connect_elasticsearch(self):
         _es = None
+        # _es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
         _es = Elasticsearch([{'host': self.es_host, 'port': self.es_port}])
         if _es.ping():
             print('Elastic Connected')

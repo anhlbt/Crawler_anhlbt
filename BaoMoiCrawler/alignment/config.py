@@ -17,7 +17,7 @@ class Config():
 class ConfigEbook():
     def __init__(self, config_fname='config.ini'):
         config = configparser.ConfigParser()
-        config.sections()
+        # config.sections()
         logging.info('Load configure from %s', config_fname)
         config.read(config_fname)
             
